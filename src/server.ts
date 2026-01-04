@@ -1,23 +1,22 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express from "express";
-import connectDB from "./config/db";
-import sujanRouter from "./routes/sujanRoute";
+import connectToDatabase from "./configs/db.config";
+import app from "./app";
 
-const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8080;
 
-app.use(express.json());
+const startServer = async (): Promise<void> => {
+  try {
+    await connectToDatabase();
 
-app.get("/", (req, res) => {
-  res.send("Vehicle Service Management System, Backend API");
-});
+    app.listen(port, () => {
+      console.log(`Server is running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start the server\n", error);
+    process.exit(1);
+  }
+};
 
-connectDB();
-
-app.use("/trial", sujanRouter);
-
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+startServer();
